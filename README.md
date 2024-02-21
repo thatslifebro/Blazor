@@ -17,7 +17,7 @@ https://github.com/thatslifebro/MiniGameHeavenAPIServer
 ### DataLoad
 
 유저의 데이터를 불러옵니다.
-![dataload](img/Dataload.PNG)
+![DataLoad](img/DataLoad.PNG)
 
 ### Attendance
 
