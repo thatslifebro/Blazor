@@ -2,39 +2,39 @@
 
 https://github.com/thatslifebro/MiniGameHeavenAPIServer
 
-À§ ÇÁ·ÎÁ§Æ®¸¦ À§ÇÑ ÅøÀÔ´Ï´Ù.
+ìœ„ í”„ë¡œì íŠ¸ë¥¼ ìœ„í•œ íˆ´ìž…ë‹ˆë‹¤.
 
 ### HiveLogin
 
-![hivelogin](/img/hivelogin.png)
-ÀÌ¸ÞÀÏ°ú ºñ¹Ð¹øÈ£¸¦ ¹Þ¾Æ ·ÎÄÃ ½ºÅä¸®Áö¿¡ playerId¿Í ÇÏÀÌºê ÅäÅ«À» ÀúÀåÇÕ´Ï´Ù.
+![hivelogin](~@source/img/hivelogin.png)
+ì´ë©”ì¼ê³¼ ë¹„ë°€ë²ˆí˜¸ë¥¼ ë°›ì•„ ë¡œì»¬ ìŠ¤í† ë¦¬ì§€ì— playerIdì™€ í•˜ì´ë¸Œ í† í°ì„ ì €ìž¥í•©ë‹ˆë‹¤.
 
 ### Login
 
 ![login](/img/login.png)
-·ÎÄÃ ½ºÅä¸®Áö¿¡¼­ µ¥ÀÌÅÍ°¡ ÀÖ´Ù¸é °¡Á®¿Í ÀÚµ¿ ÀÔ·ÂÇÏ°í, ¼¼¼Ç ½ºÅä¸®Áö¿¡ uid¿Í ÅäÅ«À» ÀúÀåÇÕ´Ï´Ù.
+ë¡œì»¬ ìŠ¤í† ë¦¬ì§€ì—ì„œ ë°ì´í„°ê°€ ìžˆë‹¤ë©´ ê°€ì ¸ì™€ ìžë™ ìž…ë ¥í•˜ê³ , ì„¸ì…˜ ìŠ¤í† ë¦¬ì§€ì— uidì™€ í† í°ì„ ì €ìž¥í•©ë‹ˆë‹¤.
 
 ### DataLoad
 
 ![dataload](/img/dataload.png)
-À¯ÀúÀÇ µ¥ÀÌÅÍ¸¦ ºÒ·¯¿É´Ï´Ù.
+ìœ ì €ì˜ ë°ì´í„°ë¥¼ ë¶ˆëŸ¬ì˜µë‹ˆë‹¤.
 
 ### Attendance
 
 ![attendance](/img/attendance.png)
-À¯ÀúÀÇ ÀÌ¹ø´Þ Ãâ¼® ÇöÈ²°ú ÃÖ±Ù Ãâ¼®ÀÏÀ» º¸¿©ÁÝ´Ï´Ù.
+ìœ ì €ì˜ ì´ë²ˆë‹¬ ì¶œì„ í˜„í™©ê³¼ ìµœê·¼ ì¶œì„ì¼ì„ ë³´ì—¬ì¤ë‹ˆë‹¤.
 
 ### Friend
 
 ![friend](/img/friend.png)
-Ä£±¸ Á¤º¸¸¦ ºÒ·¯¿À°í Ãß°¡, »èÁ¦, ¿äÃ» ¼ö¶ô ¹× Ãë¼Ò°¡ °¡´ÉÇÕ´Ï´Ù.
+ì¹œêµ¬ ì •ë³´ë¥¼ ë¶ˆëŸ¬ì˜¤ê³  ì¶”ê°€, ì‚­ì œ, ìš”ì²­ ìˆ˜ë½ ë° ì·¨ì†Œê°€ ê°€ëŠ¥í•©ë‹ˆë‹¤.
 
 ### User
 
 ![user](/img/user.png)
-´Ù¸¥ À¯ÀúÀÇ Á¤º¸¸¦ °£·«È÷ º¸¿©ÁÝ´Ï´Ù.
+ë‹¤ë¥¸ ìœ ì €ì˜ ì •ë³´ë¥¼ ê°„ëžµížˆ ë³´ì—¬ì¤ë‹ˆë‹¤.
 
 ### Rank
 
 ![rank](/img/rank.png)
-»óÀ§ ·©Å©¸¦ º¸¿©ÁÝ´Ï´Ù.
+ìƒìœ„ ëž­í¬ë¥¼ ë³´ì—¬ì¤ë‹ˆë‹¤.
