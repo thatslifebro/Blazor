@@ -1,4 +1,6 @@
-﻿namespace BlazorApp1.Pages
+﻿using System.ComponentModel;
+
+namespace BlazorApp1.Pages
 {
 	public class AttendanceResult
 	{
@@ -25,8 +27,11 @@
 	}
     public class RewardData
     {
+		[DisplayName("보상 키")]
 		public int reward_key { get; set; }
-		public int reward_qty { get; set; }
-		public string reward_type { get; set; }
+        [DisplayName("보상 수")]
+        public int reward_qty { get; set; }
+        [DisplayName("보상 종류")]
+        public string reward_type { get; set; }
     }
 }
