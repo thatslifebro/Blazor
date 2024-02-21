@@ -17,7 +17,7 @@ https://github.com/thatslifebro/MiniGameHeavenAPIServer
 ### DataLoad
 
 유저의 데이터를 불러옵니다.
-![dataload](img/dataload.PNG)
+![dataload](img/Dataload.PNG)
 
 ### Attendance
 
@@ -27,7 +27,7 @@ https://github.com/thatslifebro/MiniGameHeavenAPIServer
 ### Friend
 
 친구 정보를 불러오고 추가, 삭제, 요청 수락 및 취소가 가능합니다.
-![friend]/img/friend.PNG)
+![friend](/img/friend.PNG)
 
 ### User
 
