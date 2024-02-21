@@ -1,0 +1,72 @@
+﻿@page "/login"
+@inject IHttpClientFactory ClientFactory
+@inject IJSInProcessRuntime jsr
+@inject ILogger<Login> logger;
+@inject IGlobal global
+
+<h2>Login</h2>
+<br>
+<EditForm Model="@user" OnValidSubmit="@OnValid" style="max-width:500px;" Enhance>
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+	<div class="mb-2" style="padding: 10px;">
+		<h4>하이브 토큰</h4>
+		<InputText class="form-control" @bind-Value="user.HiveToken" placeholder="Enter HiveToken"></InputText>
+	</div>
+	<div class="mb-2" style="padding: 10px;">
+		<h4>플레이어 ID</h4>
+		<InputNumber class="form-control" @bind-Value="user.PlayerId"></InputNumber>
+	</div>
+	<div class="mb-2 text-right" style="padding: 10px;">
+		<button class="btn btn-secondary" disabled="@isDisabled">login</button>
+		@if (isLoading)
+        {
+            <AntDesign.Spin />
+        }
+	</div>
+</EditForm>
+
+@code {
+	HttpClient Http;
+	LoginModel user = new();
+	string token = string.Empty;
+	int uid = 0;
+	bool isDisabled = false;
+	bool isLoading = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+		user.HiveToken = jsr.Invoke<string>("localStorage.getItem", "hiveToken");
+		user.PlayerId = Convert.ToInt32(jsr.Invoke<string>("localStorage.getItem", "playerId"));
+		Http = ClientFactory.CreateClient("GameServer");
+	}
+
+	async Task OnValid()
+	{
+		isLoading = true;
+		using (var msg = await Http.PostAsJsonAsync<LoginModel>("/login", user, System.Threading.CancellationToken.None))
+		{
+			if (msg.IsSuccessStatusCode)
+			{
+				LoginResult result = await msg.Content.ReadFromJsonAsync<LoginResult>();
+				uid = result.uid;
+				token = result.token;
+
+				isDisabled = false;
+
+				if (result.result == 0)
+				{
+					await jsr.InvokeVoidAsync("sessionStorage.setItem", "uid", uid);
+					await jsr.InvokeVoidAsync("sessionStorage.setItem", "token", token);
+
+					global.set_jwt(token);
+					global.set_uid(uid);
+					isDisabled = true;
+					isLoading = false;
+				}
+			}
+		}
+	}
+
+
+}

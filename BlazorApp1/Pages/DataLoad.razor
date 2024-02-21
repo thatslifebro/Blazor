@@ -1,0 +1,122 @@
+﻿@page "/dataload"
+@inject IHttpClientFactory ClientFactory
+@using AntDesign
+@using System.Text.Json
+@using System.ComponentModel
+@using BlazorApp1.Shared
+
+<h2>DataLoad</h2>
+<br>
+
+<div style="padding: 30px">
+    @if(isUserLoading)
+    {
+        <AntDesign.Spin />
+    }
+    else{
+        <Descriptions Title="User Info" Bordered>
+        <DescriptionsItem Title="플레이어 ID">@userData.userInfo.player_id</DescriptionsItem>
+            <DescriptionsItem Title="닉네임">@userData.userInfo.nickname</DescriptionsItem>
+            <DescriptionsItem Title="메인 캐릭터 키">@userData.userInfo.main_char_key</DescriptionsItem>
+            <DescriptionsItem Title="계정 생성 일시">@userData.userInfo.create_dt</DescriptionsItem>
+            <DescriptionsItem Title="최근 로그인 일시">@userData.userInfo.recent_login_dt</DescriptionsItem>
+            <DescriptionsItem Title="최고 점수 종합">@userData.userInfo.total_bestscore</DescriptionsItem>
+            <DescriptionsItem Title="이번 시즌 최고 점수 종합">@userData.userInfo.total_bestscore_cur_season</DescriptionsItem>
+            <DescriptionsItem Title="이전 시즌 최고 점수 종합">@userData.userInfo.total_bestscore_prev_season</DescriptionsItem>
+            <DescriptionsItem Title="스타 포인트">@userData.userInfo.star_point</DescriptionsItem>
+        </Descriptions>
+        <br>
+        <Descriptions Title="Money Info" Bordered>
+        <DescriptionsItem Title="보석">@userData.moneyInfo.jewelry</DescriptionsItem>
+            <DescriptionsItem Title="금메달">@userData.moneyInfo.gold_medal</DescriptionsItem>
+            <DescriptionsItem Title="썬칩">@userData.moneyInfo.sunchip</DescriptionsItem>
+            <DescriptionsItem Title="현금">@userData.moneyInfo.cash</DescriptionsItem>
+        </Descriptions>
+    }
+	
+        <br>
+    @if(isGameLoading)
+    {
+        <AntDesign.Spin />
+    }
+    else
+    {
+        <Descriptions Title="Game Data" Bordered>
+		    <DescriptionsItem Title="보유 게임" Span="3">
+                <Table DataSource="@gameData.GameList" Bordered="@true" HidePagination=true>
+                    <PropertyColumn Property="c=>c.game_key"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.play_char_key"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.recent_play_dt"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.bestscore"></PropertyColumn>
+                </Table>
+            </DescriptionsItem>
+            <DescriptionsItem Title="보유 캐릭터" Span = "2">
+                <Table DataSource="@gameData.CharList" Bordered="@true" HidePagination=true>
+                    <PropertyColumn Property="c=>c.CharInfo.char_key"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.CharInfo.char_level"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.CharInfo.char_cnt"></PropertyColumn>
+                </Table>
+            </DescriptionsItem>
+            <DescriptionsItem Title="보유 스킨">
+                <Table DataSource="@gameData.SkinList" Bordered="@true" HidePagination=true>
+                    <PropertyColumn Property="c=>c.skin_key"></PropertyColumn>
+                </Table>
+            </DescriptionsItem>
+            <DescriptionsItem Title="보유 코스튬" Span = "1">
+                <Table DataSource="@gameData.CostumeList" Bordered="@true" HidePagination=true>
+                    <PropertyColumn Property="c=>c.costume_key"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.costume_level"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.costume_cnt"></PropertyColumn>
+                </Table>
+            </DescriptionsItem>
+            <DescriptionsItem Title="보유 푸드" Span ="2">
+                <Table DataSource="@gameData.FoodList" Bordered="@true" HidePagination=true>
+                    <PropertyColumn Property="c=>c.food_key"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.food_level"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.food_qty"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.food_gear_qty"></PropertyColumn>
+                </Table>
+            </DescriptionsItem>
+	    </Descriptions>
+    }
+</div>
+
+@code {
+    HttpClient Http;
+    UserData userData = new UserData();
+    GameData gameData = new GameData();
+    bool isUserLoading = true;
+    bool isGameLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Navbar.currentNav = "8";
+        isUserLoading = true;
+        isGameLoading = true;
+        Http = ClientFactory.CreateClient("GameServer");
+        using (var response = await Http.PostAsync("/UserDataLoad", null))
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<UserDataLoadResponse>();
+                if(data.result == 0)
+                {
+                    userData = data.userData;
+                    isUserLoading = false;
+                }
+            }
+        }
+        using (var response = await Http.PostAsync("/GameDataLoad", null))
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<GameDataLoadResponse>();
+                if (data.result == 0)
+                {
+                    gameData = data.GameData;
+                    isGameLoading = false;
+                }
+            }
+        }
+    }
+}

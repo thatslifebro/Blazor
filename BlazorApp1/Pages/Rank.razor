@@ -1,0 +1,58 @@
+﻿@page "/rank"
+@using AntDesign
+@using BlazorApp1.Shared
+@inject IHttpClientFactory ClientFactory
+
+
+<h2>Rank</h2>
+<br>
+
+<div style="padding: 0px 50px 0px 30px">
+    <Divider Orientation="left">점수 순위</Divider>
+    <AntList Bordered DataSource="@temp">
+         <ChildContent>
+             <ListItem>
+                 <span>순위</span>
+                <span>uid</span>
+                <span>점수</span>
+            </ListItem>
+        </ChildContent>
+    </AntList>
+    <AntList Bordered DataSource="@ranking">
+         <ChildContent Context="item">
+             <ListItem>
+                <span>@item.rank</span>
+                <span>@item.uid</span>
+                <span>@item.score</span>
+             </ListItem>
+         </ChildContent>
+     </AntList>
+</div>
+@code {
+    HttpClient Http;
+    List<RankInfo> ranking = new();
+    List<int> temp = new List<int>() { 1 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        Navbar.currentNav = "6";
+        Http = ClientFactory.CreateClient("GameServer");
+        using (var msg = await Http.PostAsync("/TopRanking", null))
+        {
+            if(msg.IsSuccessStatusCode)
+            {
+                var result = await msg.Content.ReadFromJsonAsync<RankResponse>();
+                if(result.result == 0)
+                {
+                    ranking.Clear();
+                    foreach(var item in result.rankingData)
+                    {
+                        ranking.Add(item);
+                    }
+                }
+            }
+        }
+    }
+
+    
+}

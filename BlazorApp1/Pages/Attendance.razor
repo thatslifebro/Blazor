@@ -1,0 +1,79 @@
+﻿@page "/attendance"
+@inject IHttpClientFactory ClientFactory
+@using BlazorApp1.Shared
+
+<h2>Attendance</h2>
+<br>
+
+@if (isError)
+{
+	<h3> Please Login First </h3>
+}
+else{
+	<h4>attendance cnt : @attendanceInfo.attendance_cnt</h4>
+	<h4>recent attendance dt : @attendanceInfo.recent_attendance_dt</h4>
+}
+
+
+
+<br>
+<button disabled="@isCheckedAttendance" onclick="@AttendanceCheck">출석 체크</button>
+
+@code {
+	HttpClient Http;
+	AttendanceInfo attendanceInfo = new();
+	AttendanceRewardsInfo rewards = new();
+	bool isError = true;
+	bool isCheckedAttendance = true;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Http = ClientFactory.CreateClient("GameServer");
+		Navbar.currentNav = "2";
+		await GetAttendanceInfo();
+	}
+
+	async Task GetAttendanceInfo()
+	{
+		using (var msg = await Http.PostAsync("/AttendanceInfo", null))
+		{
+			if (msg.IsSuccessStatusCode)
+			{
+				var result = await msg.Content.ReadFromJsonAsync<AttendanceResult>();
+				attendanceInfo.attendance_cnt = result.attendanceInfo.attendance_cnt;
+				attendanceInfo.recent_attendance_dt = result.attendanceInfo.recent_attendance_dt;
+
+				if (result.result == 0)
+				{
+					isError = false;
+				}
+
+				if (Convert.ToDateTime(attendanceInfo.recent_attendance_dt.Split("T")[0]).Date < DateTime.Today)
+				{
+					isCheckedAttendance = false;
+				}
+
+			}
+		}
+	}
+
+	async Task AttendanceCheck()
+	{
+		using (var msg = await Http.PostAsync("/AttendanceCheck", null))
+		{
+			if (msg.IsSuccessStatusCode)
+			{
+				var result = await msg.Content.ReadFromJsonAsync<AttendanceRewardsResult>();
+				// rewards = result.rewards;
+
+				if (result.result == 0)
+				{
+					isCheckedAttendance = true;
+					await GetAttendanceInfo();
+					
+				}
+
+			}
+		}
+	}
+}

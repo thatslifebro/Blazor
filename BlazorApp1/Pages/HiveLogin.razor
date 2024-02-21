@@ -1,0 +1,71 @@
+﻿@page "/hivelogin"
+@inject IHttpClientFactory ClientFactory
+@inject IJSInProcessRuntime jsr
+@using AntDesign
+@using BlazorApp1.Shared
+
+<h2>HiveLogin</h2>
+<br>
+<EditForm Model="@user" OnValidSubmit="@OnValid" style="max-width:500px;" Enhance>
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+	<div class="mb-2" style="padding: 10px;">
+		<h4>이메일</h4>
+		<InputText class="form-control" @bind-Value="user.email" placeholder="Enter Email"></InputText>
+	</div>
+	<div class="mb-2" style="padding: 10px;">
+		<h4>비밀번호</h4>
+		<InputPassword class="form-control" @bind-Value="user.password"></InputPassword>
+	</div>
+	<div class="mb-2 text-right" style="padding: 10px;">
+		<button class="btn btn-secondary">login</button>
+	</div>
+</EditForm>
+
+@if (!isDisabled)
+{
+	<div style="padding: 30px">
+		<Descriptions Title="Login Info" Bordered>
+			<DescriptionsItem Title="하이브 토큰">@hiveToken</DescriptionsItem>
+			<DescriptionsItem Title="플레이어 ID">@playerId</DescriptionsItem>
+		</Descriptions>
+	</div>
+}
+
+
+@code {
+	HttpClient Http;
+	HiveLoginModel user = new();
+	string hiveToken = string.Empty;
+	int playerId = 0;
+	bool isDisabled = true;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Http = ClientFactory.CreateClient("HiveServer");
+		Navbar.currentNav = "5";
+	}
+
+	async Task OnValid()
+	{
+		using (var msg = await Http.PostAsJsonAsync<HiveLoginModel>("/loginhive", user, System.Threading.CancellationToken.None))
+		{
+			if (msg.IsSuccessStatusCode)
+			{
+				HiveLoginResponse result = await msg.Content.ReadFromJsonAsync<HiveLoginResponse>();
+				if (result.result == 0)
+				{
+					playerId = result.playerId;
+					hiveToken = result.hiveToken;
+					isDisabled = false;
+					await jsr.InvokeVoidAsync("localStorage.setItem", "hiveToken", hiveToken);
+					await jsr.InvokeVoidAsync("localStorage.setItem", "playerId", playerId);
+				}
+				else
+				{
+					isDisabled = true;
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,37 @@
+﻿@using AntDesign
+@inject NavigationManager nav
+
+<Menu class="navbar" Style="width: 256px;"
+    DefaultSelectedKeys=@(new[] { currentNav })
+    DefaultOpenKeys=@(new[] { "sub1" })
+    Mode=@MenuMode.Inline>
+    <MenuItem Key="5" OnClick="@(()=>nav.NavigateTo("/hivelogin"))">HiveLogin</MenuItem>
+    <MenuItem Key="1" OnClick="@(()=>nav.NavigateTo("/login"))">Login</MenuItem>
+    <MenuItem Key="7" OnClick="@(()=>nav.NavigateTo("/dataload"))">DataLoad</MenuItem>
+    <MenuItem Key="2" OnClick="@(()=>nav.NavigateTo("/attendance"))">Attendance</MenuItem>
+    <MenuItem Key="3" OnClick="@(()=>nav.NavigateTo("/friend"))">Friend</MenuItem>
+    <MenuItem Key="4" OnClick="@(()=>nav.NavigateTo("/user"))">User</MenuItem>
+    <MenuItem Key="6" OnClick="@(()=>nav.NavigateTo("/rank"))">Rank</MenuItem>
+</Menu>
+
+@code
+{
+    public static string currentNav = "1";
+    RenderFragment sub1Title =
+    @<span>
+        <Icon Type="mail" Theme="outline"></Icon>
+        <span>Auth</span>
+    </span>;
+
+    RenderFragment sub2Title =
+    @<span>
+        <Icon Type="appstore" Theme="outline"></Icon>
+        <span>Attendance</span>
+    </span>;
+
+    RenderFragment sub4Title =
+    @<span>
+        <Icon Type="setting" Theme="outline"></Icon>
+        <span>DataLoad</span>
+    </span>;
+    }

@@ -1,0 +1,175 @@
+﻿@page "/friend"
+@inject IHttpClientFactory ClientFactory
+@inject IGlobal global
+@using AntDesign
+@using BlazorApp1.Shared
+
+<h2>Freind</h2>
+<br>
+
+<GridRow Gutter="(8,8)">
+	<GridCol Span="8">
+		<h3>나의 UID : @global.get_uid()</h3>
+		<Divider Orientation="left">친구 목록</Divider>
+		<AntList Bordered DataSource="@friendList">
+			<ChildContent Context="item">
+				<ListItem>
+					<span><Text Mark>[UID]</Text></span>
+					@item.friend_uid
+					<Button Danger Size="@ButtonSize.Small" OnClick="async ()=>await DeleteFriend(item.friend_uid)">삭제</Button>
+				</ListItem>
+			</ChildContent>
+		</AntList>
+		<Divider Orientation="left">보낸 친구 요청</Divider>
+		<AntList Bordered DataSource="@friendReqSent">
+			<ChildContent Context="item">
+				<ListItem>
+					<span><Text Mark>[UID]</Text></span>
+					@item.friend_uid
+					<Button Size="@ButtonSize.Small" OnClick="async ()=>await CancleReqSent(item.friend_uid)">취소</Button>
+				</ListItem>
+			</ChildContent>
+		</AntList>
+		<Divider Orientation="left">받은 친구 요청</Divider>
+		<AntList Bordered DataSource="@friendReqRecv">
+			<ChildContent Context="item">
+				<ListItem>
+					<span><Text Mark>[UID]</Text></span>
+					@item.uid
+					<Button Size="@ButtonSize.Small" OnClick="async ()=>await AcceptReq(item.uid)">수락</Button>
+				</ListItem>
+			</ChildContent>
+		</AntList>
+	</GridCol>
+	<GridCol Span="1">
+
+	</GridCol>
+	<GridCol Span="8">
+		<h3>친구 추가</h3>
+		<div>
+			<AntDesign.InputNumber @bind-Value="friendAddUid" Min="1" DefaultValue="1" PlaceHolder="please input something"></AntDesign.InputNumber>
+			<Button Size="@ButtonSize.Small" OnClick="async ()=>await AddFriend(friendAddUid)">추가</Button>
+		</div>
+	</GridCol>
+	<GridCol Span="7">
+		
+	</GridCol>
+</GridRow>
+
+
+
+@code {
+	HttpClient Http;
+	List<FriendInfo> friendList = new List<FriendInfo>();
+	List<FriendInfo> friendReqSent = new List<FriendInfo>();
+	List<FriendInfo> friendReqRecv = new List<FriendInfo>();
+
+	int friendAddUid = 0;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		Http = ClientFactory.CreateClient("GameServer");
+		Navbar.currentNav = "3";
+		await LoadFriendInfo();
+	}
+
+	async Task LoadFriendInfo()
+	{
+		using (var msg = await Http.PostAsync("/FriendList", null))
+		{
+			if (msg.IsSuccessStatusCode)
+			{
+				friendList.Clear();
+				friendReqSent.Clear();
+				friendReqRecv.Clear();
+				var result = await msg.Content.ReadFromJsonAsync<FriendListResult>();
+				var ListInfo = result.friendList;
+				foreach (var item in ListInfo)
+				{
+					if (item.friend_yn == true)
+						friendList.Add(item);
+					else if (item.uid == global.get_uid())
+						friendReqSent.Add(item);
+					else friendReqRecv.Add(item);
+				}
+			}
+		}
+	}
+
+	async Task DeleteFriend(int friend_uid)
+	{
+		FriendUid friend = new();
+		friend.friendUid = friend_uid;
+		using (var msg = await Http.PostAsJsonAsync<FriendUid>("/FriendDelete", friend, System.Threading.CancellationToken.None))
+		{
+			if (msg.IsSuccessStatusCode)
+			{
+				var result = await msg.Content.ReadFromJsonAsync<Result>();
+				if(result.result == 0)
+				{
+					await LoadFriendInfo();
+				}
+			}
+		}
+	}
+
+	async Task CancleReqSent(int friend_uid)
+	{
+		FriendUid friend = new();
+		friend.friendUid = friend_uid;
+		using (var msg = await Http.PostAsJsonAsync<FriendUid>("/FriendCancelReq", friend, System.Threading.CancellationToken.None))
+		{
+			if (msg.IsSuccessStatusCode)
+			{
+				var result = await msg.Content.ReadFromJsonAsync<Result>();
+				if (result.result == 0)
+				{
+					await LoadFriendInfo();
+				}
+			}
+		}
+	}
+
+	async Task AcceptReq(int friend_uid)
+	{
+		FriendUid friend = new();
+		friend.friendUid = friend_uid;
+		using (var msg = await Http.PostAsJsonAsync<FriendUid>("/FriendAccept", friend, System.Threading.CancellationToken.None))
+		{
+			if (msg.IsSuccessStatusCode)
+			{
+				var result = await msg.Content.ReadFromJsonAsync<Result>();
+				if (result.result == 0)
+				{
+					await LoadFriendInfo();
+				}
+				else
+				{
+					Console.WriteLine(result.result);
+				}
+			}
+		}
+	}
+
+	async Task AddFriend(int friend_uid)
+	{
+		FriendUid friend = new();
+		friend.friendUid = friend_uid;
+		using (var msg = await Http.PostAsJsonAsync<FriendUid>("/FriendSendReq", friend, System.Threading.CancellationToken.None))
+		{
+			if (msg.IsSuccessStatusCode)
+			{
+				var result = await msg.Content.ReadFromJsonAsync<Result>();
+				if (result.result == 0)
+				{
+					await LoadFriendInfo();
+				}
+				else
+				{
+					Console.WriteLine(result.result);
+				}
+			}
+        }
+    }
+}

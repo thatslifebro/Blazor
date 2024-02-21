@@ -1,0 +1,60 @@
+﻿@page "/user"
+@inject IHttpClientFactory ClientFactory
+@inject IGlobal global
+@using AntDesign
+@using System.ComponentModel
+@using BlazorApp1.Shared
+
+<h2>User</h2>
+<br>
+<AntDesign.InputNumber @bind-Value="uid" Min="1" DefaultValue="1" PlaceHolder="please input something"></AntDesign.InputNumber>
+<Button Size="@ButtonSize.Small" OnClick="GetUserInfo">검색</Button>
+<br>
+<br>
+<div style="padding: 30px">
+	<Descriptions Title="User Info" Bordered>
+		<DescriptionsItem Title="UID">@userInfo.uid</DescriptionsItem>
+		<DescriptionsItem Title="Nickname">@userInfo.nickname</DescriptionsItem>
+		<DescriptionsItem Title="Total Best Score">@userInfo.total_bestscore</DescriptionsItem>
+		<DescriptionsItem Title="Rank">@userInfo.rank</DescriptionsItem>
+	</Descriptions>
+</div>
+
+	@code {
+	HttpClient Http;
+	int uid = 0;
+	UserInfo userInfo = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		Http = ClientFactory.CreateClient("GameServer");
+		Navbar.currentNav = "4";
+		uid=global.get_uid();
+		await GetUserInfo();
+	}
+
+	async Task GetUserInfo()
+	{
+		UID user = new UID();
+		user.uid = uid;
+		using (var msg = await Http.PostAsJsonAsync<UID>("/OtherUserInfo", user, System.Threading.CancellationToken.None))
+		{
+			if (msg.IsSuccessStatusCode)
+			{
+				var result = await msg.Content.ReadFromJsonAsync<UserInfoResponse>();
+				var info = result.userInfo;
+				if(result.result == 0)
+				{
+					userInfo = info;
+				}
+				else
+				{
+					userInfo.uid = 0;
+					userInfo.nickname = "";
+					userInfo.total_bestscore = 0;
+					userInfo.rank = 0;
+				}
+			}
+		}
+    }
+}
