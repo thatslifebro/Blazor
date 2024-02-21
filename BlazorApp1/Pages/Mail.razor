@@ -7,31 +7,38 @@
 <br>
 
 <div style="padding: 30px">
+    <Collapse Animation>
     @foreach (var mail in mailbox)
     {
-        <Descriptions Bordered>
-            <DescriptionsItem Title="메일 번호">@mail.mailInfo.mail_seq</DescriptionsItem>
-            <DescriptionsItem Title="메일 제목">@mail.mailInfo.mail_title</DescriptionsItem>
-            <DescriptionsItem Title="메일 생성 일시">@mail.mailInfo.create_dt</DescriptionsItem>
-            <DescriptionsItem Title="메일 만료 일시">@mail.mailInfo.expire_dt</DescriptionsItem>
-            <DescriptionsItem Title="메일 보상 수령 일시">@mail.mailInfo.receive_dt</DescriptionsItem>
-            <DescriptionsItem Title="메일 보상 수령 여부">@mail.mailInfo.receive_yn
-                @if(mail.mailInfo.receive_yn == false)
-                {
-                    <Button OnClick="async ()=>await ReceiveMail(mail.mailInfo.mail_seq)">수령</Button>
-                }
-            </DescriptionsItem>
-		    <DescriptionsItem Title="메일 보상" Span="3">
-                <Table DataSource="@mail.mailItems" Bordered="@true" HidePagination=true>
-                    <PropertyColumn Property="c=>c.reward_type"></PropertyColumn>
-                    <PropertyColumn Property="c=>c.reward_key"></PropertyColumn>
-                    <PropertyColumn Property="c=>c.reward_qty"></PropertyColumn>
-                </Table>
-            </DescriptionsItem>
-        </Descriptions>
-        <br>
+        <Panel Header="@mail.mailInfo.mail_title">
+            <Descriptions Bordered>
+                <DescriptionsItem Title="메일 번호">@mail.mailInfo.mail_seq
+                    <Button OnClick="async ()=>await DeleteMail(mail)">삭제</Button>
+                </DescriptionsItem>
+                <DescriptionsItem Title="메일 제목">@mail.mailInfo.mail_title</DescriptionsItem>
+                <DescriptionsItem Title="메일 생성 일시">@mail.mailInfo.create_dt</DescriptionsItem>
+                <DescriptionsItem Title="메일 만료 일시">@mail.mailInfo.expire_dt</DescriptionsItem>
+                <DescriptionsItem Title="메일 보상 수령 일시">@mail.mailInfo.receive_dt</DescriptionsItem>
+                <DescriptionsItem Title="메일 보상 수령 여부">@mail.mailInfo.receive_yn
+                    @if(mail.mailInfo.receive_yn == false)
+                    {
+                        <Button OnClick="async ()=>await ReceiveMail(mail.mailInfo.mail_seq)">수령</Button>
+                    }
+                </DescriptionsItem>
+		        <DescriptionsItem Title="메일 보상" Span="3">
+                    <Table DataSource="@mail.mailItems" Bordered="@true" HidePagination=true>
+                        <PropertyColumn Property="c=>c.reward_type"></PropertyColumn>
+                        <PropertyColumn Property="c=>c.reward_key"></PropertyColumn>
+                        <PropertyColumn Property="c=>c.reward_qty"></PropertyColumn>
+                    </Table>
+                </DescriptionsItem>
+            </Descriptions>
+        </Panel>
     }
+    </Collapse>
 </div>
+
+
 
 @code {
     HttpClient Http;
@@ -73,6 +80,25 @@
 
                 m.mailInfo.receive_yn = u.mailInfo.receive_yn;
                 m.mailInfo.receive_dt = u.mailInfo.receive_dt;
+            }
+        }
+    }
+
+    async Task DeleteMail(MailData mail)
+    {
+        MailReceiveRequest request = new();
+        request.MailSeq = mail.mailInfo.mail_seq;
+        using (HttpResponseMessage response = await Http.PostAsJsonAsync<MailReceiveRequest>("/MailDelete", request))
+        {
+            var data = await response.Content.ReadFromJsonAsync<Result>();
+            if (data.result == 0)
+            {
+                mailbox.Remove(mail);
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine(data.result);
             }
         }
     }

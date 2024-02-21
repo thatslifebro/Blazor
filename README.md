@@ -19,6 +19,11 @@ https://github.com/thatslifebro/MiniGameHeavenAPIServer
 유저의 데이터를 불러옵니다.
 ![DataLoad](img/DataLoad.PNG)
 
+### Mail
+
+유저의 메일함을 가져옵니다. 보상 수령 및 삭제가 가능합니다.
+![mail](img/mail.PNG)
+
 ### Attendance
 
 유저의 이번달 출석 현황과 최근 출석일을 보여줍니다.
