@@ -6,7 +6,7 @@ https://github.com/thatslifebro/MiniGameHeavenAPIServer
 
 ### HiveLogin
 
-![hivelogin](~@source/img/hivelogin.png)
+![hivelogin](.img/hivelogin.png)
 이메일과 비밀번호를 받아 로컬 스토리지에 playerId와 하이브 토큰을 저장합니다.
 
 ### Login
